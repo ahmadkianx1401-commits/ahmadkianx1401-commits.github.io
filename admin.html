@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>پنل مدیریت سامانه آموزشی</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f3f4f8;
+            color: #111827;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        .layout { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 260px;
+            background: #020617;
+            color: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            padding: 18px 14px;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .logo-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 0 0, #38bdf8, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .sidebar-title { font-size: 15px; font-weight: 600; }
+        .sidebar-sub { font-size: 11px; color: #9ca3af; }
+
+        .sidebar-nav { margin-top: 10px; flex: 1; }
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin: 12px 8px 4px;
+        }
+        .nav-item {
+            padding: 9px 11px;
+            border-radius: 10px;
+            margin: 3px 4px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #d1d5db;
+        }
+        .nav-item span.icon { font-size: 15px; }
+        .nav-item.active {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            color: #fff;
+        }
+        .nav-item:hover { background: #111827; }
+
+        .sidebar-footer {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 10px;
+            border-top: 1px solid #111827;
+            padding-top: 8px;
+        }
+
+        .main { flex: 1; display: flex; flex-direction: column; }
+
+        .topbar {
+            background: #ffffff;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .topbar-left { display: flex; flex-direction: column; }
+        .topbar-title { font-size: 16px; font-weight: 600; }
+        .topbar-sub { font-size: 12px; color: #6b7280; }
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+        .pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-ghost { background: #f3f4f6; color: #111827; }
+        .btn-danger { background: #dc2626; color: #fff; }
+        .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 999px; }
+
+        .content {
+            padding: 18px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto 30px;
+        }
+
+        .grid { display: grid; gap: 15px; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+            border: 1px solid #e5e7eb;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .card-title { font-size: 14px; font-weight: 600; }
+        .card-sub { font-size: 11px; color: #6b7280; }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .tag-blue { background: #eff6ff; color: #1d4ed8; }
+        .tag-green { background: #ecfdf3; color: #15803d; }
+        .tag-red { background: #fef2f2; color: #b91c1c; }
+
+        .stat-value { font-size: 22px; font-weight: 700; margin-top: 5px; }
+        .stat-label { font-size: 11px; color: #6b7280; }
+
+        .input, select {
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+        .input:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px #bfdbfe;
+        }
+        .label { font-size: 12px; margin-top: 6px; display: block; }
+
+        .list {
+            margin-top: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+        .list-item {
+            padding: 10px 10px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            margin-bottom: 8px;
+            font-size: 12px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6px;
+            align-items: center;
+        }
+        .list-item-main { display: flex; flex-direction: column; gap: 3px; }
+        .list-item-title { font-weight: 600; font-size: 13px; }
+        .list-item-sub { font-size: 11px; color: #6b7280; }
+        .list-item-actions { display: flex; flex-direction: column; gap: 4px; }
+
+        .search-row { display: flex; gap: 8px; margin-top: 6px; }
+        .search-input { flex: 1; }
+
+        .muted { color: #9ca3af; font-size: 11px; }
+        .divider { height: 1px; background: #e5e7eb; margin: 10px 0; }
+
+        .text-success { color: #15803d; }
+        .text-danger { color: #b91c1c; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .layout { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">S</div>
+            <div>
+                <div class="sidebar-title">سامانه آموزشی</div>
+                <div class="sidebar-sub">پنل مدیریت مدرسه</div>
+            </div>
+        </div>
+
+        <div class="sidebar-nav">
+            <div class="nav-section-title">بخش‌ها</div>
+            <div class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard', this)">
+                <span class="icon">📊</span><span>داشبورد</span>
+            </div>
+            <div class="nav-item" data-section="videos" onclick="switchSection('videos', this)">
+                <span class="icon">🎬</span><span>مدیریت ویدیوها</span>
+            </div>
+            <div class="nav-item" data-section="users" onclick="switchSection('users', this)">
+                <span class="icon">👥</span><span>مدیریت کاربران</span>
+            </div>
+            <div class="nav-item" data-section="settings" onclick="switchSection('settings', this)">
+                <span class="icon">⚙️</span><span>تنظیمات</span>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            نسخه آزمایشی • ساخته شده برای کیان  
+            <br>مدیر: <span id="adminEmailLabel">—</span>
+        </div>
+    </aside>
+
+    <div class="main">
+
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="topbar-title">پنل مدیریت سامانه آموزشی</div>
+                <div class="topbar-sub">کنترل کامل ویدیوها، کاربران و دسترسی‌ها</div>
+            </div>
+            <div class="topbar-right">
+                <div class="pill">Firebase + GitHub Pages</div>
+                <button class="btn btn-ghost" onclick="window.location.href='index.html'">مشاهده سایت</button>
+                <button class="btn btn-danger" onclick="logout()">خروج</button>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ورود -->
+            <div id="loginBox" class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">ورود مدیر</div>
+                        <div class="card-sub">فقط مدیر اصلی اجازه ورود دارد</div>
+                    </div>
+                    <span class="tag tag-blue">امنیت بالا</span>
+                </div>
+
+                <div class="grid" style="grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 15px;">
+                    <div>
+                        <div class="label">ورود با گوگل</div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="googleLogin()">
+                            ورود با حساب Google
+                        </button>
+                        <p class="muted" style="margin-top:6px;">
+                            فقط اگر ایمیل گوگل شما همان ایمیل مدیر اصلی باشد، وارد پنل می‌شوید.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="label">ورود با ایمیل و رمز</div>
+                        <input id="email" class="input" placeholder="ایمیل مدیر">
+                        <input id="password" class="input" type="password" placeholder="رمز عبور">
+                        <button class="btn btn-ghost" style="width:100%; margin-top:6px;" onclick="emailLogin()">
+                            ورود با ایمیل
+                        </button>
+                    </div>
+                </div>
+
+                <p id="loginError" class="text-danger" style="margin-top:8px;"></p>
+                <div class="divider"></div>
+                <p class="muted">
+                    ایمیل مدیر اصلی: <b class="text-success">ahmadkianx1401@gmail.com</b>
+                </p>
+            </div>
+
+            <!-- داشبورد -->
+            <div id="section-dashboard" style="display:none;">
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">تعداد کل ویدیوها</div>
+                                <div class="card-sub">ویدیوهای ثبت‌شده در سامانه</div>
+                            </div>
+                            <span class="tag tag-blue">🎬 ویدیو</span>
+                        </div>
+                        <div class="stat-value" id="statVideos">0</div>
+                        <div class="stat-label">ویدیو فعال در سیستم</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">تعداد کاربران</div>
+                                <div class="card-sub">کاربران ثبت‌شده با شماره موبایل</div>
+                            </div>
+                            <span class="tag tag-green">👥 کاربر</span>
+                        </div>
+                        <div class="stat-value" id="statUsers">0</div>
+                        <div class="stat-label">کاربر ثبت‌شده</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">دانلود فعال</div>
+                                <div class="card-sub">ویدیوهایی که اجازه دانلود دارند</div>
+                            </div>
+                            <span class="tag tag-red">⬇️ دانلود</span>
+                        </div>
+                        <div class="stat-value" id="statDownloadable">0</div>
+                        <div class="stat-label">ویدیو با دانلود فعال</div>
+                    </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: minmax(0,2fr) minmax(0,1.2fr); gap: 15px; margin-top:15px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">آخرین ویدیوها</div>
+                                <div class="card-sub">جدیدترین محتوا</div>
+                            </div>
+                        </div>
+                        <div id="latestVideos" class="list">
+                            <div class="muted">هنوز ویدیویی ثبت نشده است.</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">آخرین کاربران</div>
+                                <div class="card-sub">کاربران تازه ثبت‌شده</div>
+                            </div>
+                        </div>
+                        <div id="latestUsers" class="list">
+                            <div class="muted">هنوز کاربری ثبت نشده است.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ویدیوها -->
+            <div id="section-videos" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">افزودن ویدیو جدید</div>
+                            <div class="card-sub">آپلود در Storage و ثبت در Firestore</div>
+                        </div>
+                        <span class="tag tag-blue">مدیریت محتوا</span>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); gap: 15px;">
+                        <div>
+                            <label class="label">عنوان ویدیو</label>
+                            <input id="videoTitle" class="input" placeholder="مثلاً: آموزش فصل اول ریاضی نهم">
+
+                            <label class="label">توضیحات</label>
+                            <input id="videoDesc" class="input" placeholder="توضیح کوتاه درباره ویدیو">
+
+                            <label class="label">فایل ویدیو</label>
+                            <input id="videoFile" type="file" class="input">
+
+                            <label class="label">وضعیت دانلود</label>
+                            <select id="videoDownload" class="input">
+                                <option value="true">دانلود فعال باشد</option>
+                                <option value="false">دانلود غیرفعال باشد</option>
+                            </select>
+
+                            <button class="btn btn-primary" style="margin-top:10px;" onclick="uploadVideo()">آپلود و ذخیره</button>
+                            <p id="uploadStatus" class="muted" style="margin-top:6px;"></p>
+                        </div>
+
+                        <div>
+                            <div class="card-sub">راهنما</div>
+                            <p class="muted" style="margin-top:4px;">
+                                • ویدیو در مسیر <b>videos/</b> در Firebase Storage ذخیره می‌شود.  
+                                • لینک و اطلاعات در مجموعه <b>videos</b> در Firestore ثبت می‌شود.  
+                                • فیلد <b>allowDownload</b> تعیین می‌کند در صفحه اصلی دکمه دانلود نمایش داده شود یا نه.
+                            </p>
+                            <div class="divider"></div>
+                            <p class="muted">
+                                بعد از آپلود، ویدیو در لیست پایین نمایش داده می‌شود و می‌توانی آن را حذف یا وضعیت دانلودش را تغییر دهی.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:15px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">لیست ویدیوها</div>
+                            <div class="card-sub">مدیریت کامل ویدیوهای ثبت‌شده</div>
+                        </div>
+                    </div>
+
+                    <div class="search-row">
+                        <input id="videoSearch" class="input search-input" placeholder="جستجو در عنوان یا توضیحات..." oninput="renderVideosList()">
+                        <select id="videoFilter" class="input" style="max-width:150px;" onchange="renderVideosList()">
+                            <option value="all">همه</option>
+                            <option value="downloadable">دانلود فعال</option>
+                            <option value="nodownload">دانلود غیرفعال</option>
+                        </select>
+                    </div>
+
+                    <div id="videosList" class="list" style="margin-top:8px;"></div>
+                </div>
+            </div>
+
+            <!-- کاربران -->
+            <div id="section-users" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">مدیریت کاربران</div>
+                            <div class="card-sub">کاربران بر اساس نام و شماره موبایل</div>
+                        </div>
+                        <span class="tag tag-green">کاربران</span>
+                    </div>
+
+                    <div class="search-row">
+                        <input id="userSearch" class="input search-input" placeholder="جستجو بر اساس نام یا شماره..." oninput="renderUsersList()">
+                        <select id="userFilter" class="input" style="max-width:150px;" onchange="renderUsersList()">
+                            <option value="all">همه</option>
+                            <option value="can">دانلود فعال</option>
+                            <option value="cannot">دانلود غیرفعال</option>
+                        </select>
+                    </div>
+
+                    <div id="usersList" class="list" style="margin-top:8px;"></div>
+                </div>
+            </div>
+
+            <!-- تنظیمات -->
+            <div id="section-settings" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">تنظیمات و اطلاعات</div>
+                            <div class="card-sub">اتصال به Firebase و ساختار داده</div>
+                        </div>
+                        <span class="tag">ℹ️ راهنما</span>
+                    </div>
+
+                    <p class="muted">
+                        • پروژه Firebase: <b>gen-lang-client-0360805379</b><br>
+                        • مجموعه‌ها: <b>videos</b> برای ویدیوها، <b>users</b> برای کاربران.<br>
+                        • فقط ایمیل زیر اجازه ورود به پنل مدیریت را دارد:
+                    </p>
+                    <p class="text-success" style="margin-top:4px;"><b>ahmadkianx1401@gmail.com</b></p>
+
+                    <div class="divider"></div>
+
+                    <p class="muted">
+                        اگر بعداً خواستی چند مدیر داشته باشی، می‌توانیم فیلد <b>role</b> به کاربران اضافه کنیم  
+                        و نقش‌هایی مثل «مدیر کل»، «معاون»، «مسئول محتوا» تعریف کنیم.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDHcvQiC-lS2GAWd3RBx4Q4rEBs7K9oMuc",
+  authDomain: "gen-lang-client-0360805379.firebaseapp.com",
+  projectId: "gen-lang-client-0360805379",
+  storageBucket: "gen-lang-client-0360805379.firebasestorage.app",
+  messagingSenderId: "289002860899",
+  appId: "1:289002860899:web:ab002eced4f96cff14a356",
+  measurementId: "G-692QCQHJ97"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+const storage = firebase.storage();
+
+const ADMIN_EMAIL = "ahmadkianx1401@gmail.com";
+
+let allVideos = [];
+let allUsers = [];
+
+function switchSection(section, el) {
+    document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+    if (el) el.classList.add("active");
+    ["dashboard","videos","users","settings"].forEach(id => {
+        document.getElementById("section-" + id).style.display = (id === section ? "block" : "none");
+    });
+}
+
+function googleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).then(result => {
+        if (result.user.email !== ADMIN_EMAIL) {
+            alert("فقط مدیر اصلی اجازه ورود دارد");
+            auth.signOut();
+            return;
+        }
+        onLoginSuccess(result.user);
+    }).catch(() => {
+        loginError.textContent = "خطا در ورود با گوگل";
+    });
+}
+
+function emailLogin() {
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value.trim();
+
+    if (email !== ADMIN_EMAIL) {
+        loginError.textContent = "فقط مدیر اصلی اجازه ورود دارد";
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .then(res => onLoginSuccess(res.user))
+        .catch(() => loginError.textContent = "ایمیل یا رمز اشتباه است");
+}
+
+function onLoginSuccess(user) {
+    loginBox.style.display = "none";
+    document.getElementById("section-dashboard").style.display = "block";
+    document.getElementById("adminEmailLabel").textContent = user.email;
+    switchSection("dashboard", document.querySelector('.nav-item[data-section="dashboard"]'));
+    loadVideos();
+    loadUsers();
+}
+
+function logout() {
+    auth.signOut().then(() => location.reload());
+}
+
+function uploadVideo() {
+    const file = videoFile.files[0];
+    if (!file) return alert("فایل انتخاب نشده");
+
+    const title = videoTitle.value.trim();
+    const desc = videoDesc.value.trim();
+    const allowDownload = videoDownload.value === "true";
+
+    if (!title) return alert("عنوان ویدیو را وارد کن");
+
+    const ref = storage.ref("videos/" + Date.now() + "_" + file.name);
+    const uploadTask = ref.put(file);
+
+    uploadStatus.textContent = "در حال آپلود...";
+
+    uploadTask.on("state_changed", snapshot => {
+        const p = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        uploadStatus.textContent = "در حال آپلود... " + p + "%";
+    }, () => {
+        uploadStatus.textContent = "خطا در آپلود";
+    }, () => {
+        ref.getDownloadURL().then(url => {
+            db.collection("videos").add({
+                title,
+                description: desc,
+                url,
+                allowDownload,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            uploadStatus.textContent = "ویدیو با موفقیت ذخیره شد";
+            videoTitle.value = "";
+            videoDesc.value = "";
+            videoFile.value = "";
+            videoDownload.value = "true";
+        });
+    });
+}
+
+function loadVideos() {
+    db.collection("videos").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        allVideos = [];
+        snapshot.forEach(doc => allVideos.push({ id: doc.id, ...doc.data() }));
+        updateVideoStats();
+        renderVideosList();
+        renderLatestVideos();
+    });
+}
+
+function updateVideoStats() {
+    statVideos.textContent = allVideos.length;
+    statDownloadable.textContent = allVideos.filter(v => v.allowDownload).length;
+}
+
+function renderVideosList() {
+    const list = videosList;
+    list.innerHTML = "";
+
+    const q = (videoSearch.value || "").toLowerCase();
+    const filter = videoFilter.value;
+
+    const filtered = allVideos.filter(v => {
+        const matchText =
+            (v.title || "").toLowerCase().includes(q) ||
+            (v.description || "").toLowerCase().includes(q);
+
+        let matchFilter = true;
+        if (filter === "downloadable") matchFilter = v.allowDownload === true;
+        if (filter === "nodownload") matchFilter = v.allowDownload === false;
+
+        return matchText && matchFilter;
+    });
+
+    if (!filtered.length) {
+        list.innerHTML = '<div class="muted">ویدیویی مطابق جستجو پیدا نشد.</div>';
+        return;
+    }
+
+    filtered.forEach(v => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+
+        const main = document.createElement("div");
+        main.className = "list-item-main";
+
+        const title = document.createElement("div");
+        title.className = "list-item-title";
+        title.textContent = v.title;
+
+        const sub = document.createElement("div");
+        sub.className = "list-item-sub";
+        sub.textContent = v.description || "بدون توضیح";
+
+        const meta = document.createElement("div");
+        meta.className = "muted";
+        meta.innerHTML = `
+            وضعیت دانلود:
+            <span class="${v.allowDownload ? 'text-success' : 'text-danger'}">
+                ${v.allowDownload ? 'فعال' : 'غیرفعال'}
+            </span>
+        `;
+
+        main.appendChild(title);
+        main.appendChild(sub);
+        main.appendChild(meta);
+
+        const actions = document.createElement("div");
+        actions.className = "list-item-actions";
+
+        const btnToggle = document.createElement("button");
+        btnToggle.className = "btn btn-sm " + (v.allowDownload ? "btn-ghost" : "btn-primary");
+        btnToggle.textContent = v.allowDownload ? "غیرفعال کردن دانلود" : "فعال کردن دانلود";
+        btnToggle.onclick = () => toggleDownload(v.id, v.allowDownload);
+
+        const btnOpen = document.createElement("button");
+        btnOpen.className = "btn btn-sm btn-ghost";
+        btnOpen.textContent = "مشاهده ویدیو";
+        btnOpen.onclick = () => window.open(v.url, "_blank");
+
+        const btnDelete = document.createElement("button");
+        btnDelete.className = "btn btn-sm btn-danger";
+        btnDelete.textContent = "حذف";
+        btnDelete.onclick = () => deleteVideo(v.id);
+
+        actions.appendChild(btnToggle);
+        actions.appendChild(btnOpen);
+        actions.appendChild(btnDelete);
+
+        div.appendChild(main);
+        div.appendChild(actions);
+
+        list.appendChild(div);
+    });
+}
+
+function renderLatestVideos() {
+    const box = latestVideos;
+    box.innerHTML = "";
+
+    if (!allVideos.length) {
+        box.innerHTML = '<div class="muted">هنوز ویدیویی ثبت نشده است.</div>';
+        return;
+    }
+
+    allVideos.slice(0, 5).forEach(v => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.style.gridTemplateColumns = "1fr";
+
+        div.innerHTML = `
+            <div class="list-item-title">${v.title}</div>
+            <div class="list-item-sub">${v.description || "بدون توضیح"}</div>
+            <div class="muted">
+                دانلود:
+                <span class="${v.allowDownload ? 'text-success' : 'text-danger'}">
+                    ${v.allowDownload ? 'فعال' : 'غیرفعال'}
+                </span>
+            </div>
+        `;
+        box.appendChild(div);
+    });
+}
+
+function toggleDownload(id, current) {
+    db.collection("videos").doc(id).update({ allowDownload: !current });
+}
+
+function deleteVideo(id) {
+    if (!confirm("آیا از حذف این ویدیو مطمئن هستی؟")) return;
+    db.collection("videos").doc(id).delete();
+}
+
+function loadUsers() {
+    db.collection("users").orderBy("name").onSnapshot(snapshot => {
+        allUsers = [];
+        snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
+        updateUserStats();
+        renderUsersList();
+        renderLatestUsers();
+    });
+}
+
+function updateUserStats() {
+    statUsers.textContent = allUsers.length;
+}
+
+function renderUsersList() {
+    const list = usersList;
+    list.innerHTML = "";
+
+    const q = (userSearch.value || "").toLowerCase();
+    const filter = userFilter.value;
+
+    const filtered = allUsers.filter(u => {
+        const matchText =
+            (u.name || "").toLowerCase().includes(q) ||
+            (u.phone || "").toLowerCase().includes(q);
+
+        let matchFilter = true;
+        if (filter === "can") matchFilter = u.canDownload === true;
+        if (filter === "cannot") matchFilter = u.canDownload === false;
+
+        return matchText && matchFilter;
+    });
+
+    if (!filtered.length) {
+        list.innerHTML = '<div class="muted">کاربری مطابق جستجو پیدا نشد.</div>';
+        return;
+    }
+
+    filtered.forEach(u => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+
+        const main = document.createElement("div");
+        main.className = "list-item-main";
+
+        const title = document.createElement("div");
+        title.className = "list-item-title";
+        title.textContent = u.name || "بدون نام";
+
+        const sub = document.createElement("div");
+        sub.className = "list-item-sub";
+        sub.textContent = u.phone || "بدون شماره";
+
+        const meta = document.createElement("div");
+        meta.className = "muted";
+        meta.innerHTML = `
+            دانلود:
+            <span class="${u.canDownload ? 'text-success' : 'text-danger'}">
+                ${u.canDownload ? 'فعال' : 'غیرفعال'}
+            </span>
+        `;
+
+        main.appendChild(title);
+        main.appendChild(sub);
+        main.appendChild(meta);
+
+        const actions = document.createElement("div");
+        actions.className = "list-item-actions";
+
+        const btnToggle = document.createElement("button");
+        btnToggle.className = "btn btn-sm " + (u.canDownload ? "btn-ghost" : "btn-primary");
+        btnToggle.textContent = u.canDownload ? "غیرفعال کردن دانلود" : "فعال کردن دانلود";
+        btnToggle.onclick = () => toggleUserDownload(u.id, u.canDownload);
+
+        const btnDelete = document.createElement("button");
+        btnDelete.className = "btn btn-sm btn-danger";
+        btnDelete.textContent = "حذف کاربر";
+        btnDelete.onclick = () => deleteUser(u.id);
+
+        actions.appendChild(btnToggle);
+        actions.appendChild(btnDelete);
+
+        div.appendChild(main);
+        div.appendChild(actions);
+
+        list.appendChild(div);
+    });
+}
+
+function renderLatestUsers() {
+    const box = latestUsers;
+    box.innerHTML = "";
+
+    if (!allUsers.length) {
+        box.innerHTML = '<div class="muted">هنوز کاربری ثبت نشده است.</div>';
+        return;
+    }
+
+    allUsers.slice(0, 5).forEach(u => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.style.gridTemplateColumns = "1fr";
+
+        div.innerHTML = `
+            <div class="list-item-title">${u.name || "بدون نام"}</div>
+            <div class="list-item-sub">${u.phone || "بدون شماره"}</div>
+            <div class="muted">
+                دانلود:
+                <span class="${u.canDownload ? 'text-success' : 'text-danger'}">
+                    ${u.canDownload ? 'فعال' : 'غیرفعال'}
+                </span>
+            </div>
+        `;
+        box.appendChild(div);
+    });
+}
+
+function toggleUserDownload(id, current) {
+    db.collection("users").doc(id).update({ canDownload: !current });
+}
+
+function deleteUser(id) {
+    if (!confirm("آیا از حذف این کاربر مطمئن هستی؟")) return;
+    db.collection("users").doc(id).delete();
+}
+</script>
+
+</body>
+</html>
